@@ -13,7 +13,7 @@ def do_plot(field_name) :
     x_pos_first = x[0]
     x_pos_last = x[-1]
     y_max = y.max()
-    p = figure(plot_width=900, plot_height=300, toolbar_location=None, title=field_name)
+    p = figure(plot_width=800, plot_height=200, toolbar_location=None, title=field_name)
     p.y_range = Range1d(0, 1.1*float(y_max))
     p.x_range = Range1d(x_pos_first, x_pos_last)
     p.xaxis.axis_label = 'Fraction of Genome'
@@ -31,7 +31,7 @@ def do_log_plot(field_name) :
     #x_pos_first = x[0]
     x_pos_last = x[-1]
     #y_max = y.max()
-    p = figure(plot_width=900, plot_height=300, toolbar_location=None, y_axis_type='log', title=field_name)
+    p = figure(plot_width=800, plot_height=200, toolbar_location=None, y_axis_type='log', title=field_name)
     #p.y_range = Range1d(0, 1.1*float(y_max))
     p.x_range = Range1d(0, x_pos_last)
     p.xaxis.axis_label = 'Fraction of Genome'
