@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+import numpy as np
 from itertools import izip
 from bokeh.plotting import output_file, show
-from bokeh.layouts import layout
+from bokeh.layouts import layout, column
 from bokeh.models import Div
 from . import series_hierarchy_anal as sha
 from . import series_anal_plots as sap
@@ -66,7 +67,7 @@ class selected_series_page_cls(standard_page_cls) :
         standard_page_cls.__init__(self)
         self.do_series_plots_obj = do_series_plots_obj
         self.interval_id = self.do_series_plots_obj.interval_id
-        self.selected_id = 'selected_series_' + self.interval_id + '.html'
+        self.selected_id = 'selected_series_' + self.interval_id
         self.html_file_name = self.selected_id + '.html'
         self.tab_title = self.selected_id
 
@@ -128,6 +129,7 @@ class series_hierarchy_page_cls(standard_page_cls) :
 class interval_standard_plots_cls(object) :
     max_root_series = 20
     min_longest_series_matches = 128
+    #series_stats_names = [ 'samples_in_series', 'series_count', 'mean_series_length']
 
     def __init__(self, do_series_plots_obj) :
         self.do_series_plots_obj = do_series_plots_obj

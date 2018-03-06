@@ -56,7 +56,7 @@ class series_hierarchy_anal_cls(object) :
         root_series_array_indexes = np.array(self.root_series_array_indexes)
         hdo.root_series_array_indexes = root_series_array_indexes[::-1]
         hdo.root_series_data = self.series_data[hdo.root_series_array_indexes]
-        hdo.root_sample_data = self.sample_data[self.root_series_array_indexes]
+        hdo.root_sample_data = self.sample_data[hdo.root_series_array_indexes]
         hdo.root_series_sample_data = {'series_data': hdo.root_series_data,
                                         'sample_data': hdo.root_sample_data,
                                         'match_data': None}
