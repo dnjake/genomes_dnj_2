@@ -8,9 +8,44 @@ import numpy as np
 import genomes_dnj_2.repeat_analysis.parital_sequences_analysis as psa
 import genomes_dnj_2.repeat_analysis.num_16_decode as n16d
 
+'''
+It appears I am repeatedly fetching num data for an offset to try a set of matches on
+sequences at the offset.  I also want to know the total number of repeats that have
+sequences to match at the offset.  I think I want a separate object to do the matching
+for an offset.  That object will hold the offset num data and do tests on it.  A call
+from the using code can get the object and do a number of matches on it.  It can also
+get the test_repeat_count from the object
+'''
+
 seqs_tail = (('CGTCTC'), ('TGTCTC'), ('CATCTC'))
 seqs_cg_derived = (('CG'), ('TG'), ('CA'))
 seq_ttagc = 'TTAGC'
+
+class seq_match_cls(object) :
+    def __init__(self, num_data) :
+        self.num_data = num_data
+
+    def test_seq_count(self) :
+        return self.num_data.size
+
+    def sub_seq_repeat_indexes(self, seq) :
+        seq_size = len(seq)
+        smo = psa.masked_num_match_cls(self.num_data['num_16'], seq_size)
+        seq_value = psa.num_16_from_substr(seq)
+        m = smo.match_num(seq_value)
+        ris = self.num_data['repeat_index'][m]
+        return ris
+    
+    def ris_from_seqs(self, seqs) :
+        ris = None
+        for seq in seqs :
+            seq_ri = self.sub_seq_repeat_indexes(seq)
+            if ris is None :
+                ris = seq_ri
+            else :
+                ris = np.union1d(ris, seq_ri)
+        return ris
+    
 
 class offset_sequence_cls(object) :
     
@@ -68,6 +103,24 @@ class offset_sequence_cls(object) :
             repeat_indexes = np.intersect1d(repeat_indexes, in_repeat_indexes)
         return cls.from_repeat_indexes(repeat_indexes, data_obj) 
 
+    @classmethod
+    def from_alu_name(cls, alu_name, data_obj) :
+        m = data_obj.repeats['repeat_name'] == alu_name
+        repeat_indexes = data_obj.repeats['index'][m]
+        return cls.from_repeat_indexes(repeat_indexes, data_obj)
+    
+    @classmethod
+    def from_alu_names(cls, alu_names, data_obj) :
+        repeat_indexes = None
+        for name in alu_names :
+            m = data_obj.repeats['repeat_name'] == name
+            name_repeat_indexes = data_obj.repeats['index'][m]
+            if repeat_indexes is None :
+                repeat_indexes = name_repeat_indexes
+            else :
+                repeat_indexes = np.union1d(repeat_indexes, name_repeat_indexes)
+        return cls.from_repeat_indexes(repeat_indexes, data_obj)
+    
     def __init__(self, num_data_obj) :
         self.num_data_obj = num_data_obj
 
@@ -89,6 +142,10 @@ class offset_sequence_cls(object) :
             else :
                 ris = np.union1d(ris, seq_ri)
         return ris
+    
+    def offset_seq_match_obj(self, offset) :
+        offset_num_data = self.num_data_obj.num_data_from_offset(offset)
+        return seq_match_cls(offset_num_data)
 
     
     def ris_from_and_offset_seqs_pairs(self, pairs) :
