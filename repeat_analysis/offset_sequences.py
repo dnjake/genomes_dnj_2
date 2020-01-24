@@ -21,12 +21,22 @@ seqs_tail = (('CGTCTC'), ('TGTCTC'), ('CATCTC'))
 seqs_cg_derived = (('CG'), ('TG'), ('CA'))
 seq_ttagc = 'TTAGC'
 
+'''
+Can modify this class to return repeat indexes for a num_16
+and also to return all of the offset repeat indexes
+
+'''
+
+
 class seq_match_cls(object) :
     def __init__(self, num_data) :
         self.num_data = num_data
 
     def test_seq_count(self) :
         return self.num_data.size
+
+    def tested_ris(self) :
+        return self.num_data['repeat_index']
 
     def sub_seq_repeat_indexes(self, seq) :
         seq_size = len(seq)
@@ -35,6 +45,10 @@ class seq_match_cls(object) :
         m = smo.match_num(seq_value)
         ris = self.num_data['repeat_index'][m]
         return ris
+    
+    def num_16_repeat_indexes(self, num_16) :
+        m = self.num_data['num_16'] == num_16
+        return self.num_data['repeat_index'][m]
     
     def ris_from_seqs(self, seqs) :
         ris = None

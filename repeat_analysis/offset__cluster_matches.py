@@ -72,6 +72,39 @@ class offset_cluster_match_cls(object) :
     def do_base_offsets(self) :
         for offset in self.base_offsets :
             self.do_base_offset_match(offset)
+
+    def total_test_ris(self) :
+        test_ris = None
+        for offset in self.base_offsets :
+            offset_obj = self.osq_obj.offset_seq_match_obj(offset)
+            offset_ris = offset_obj.tested_ris()
+            if offset_ris is None :
+                continue
+            if test_ris is None :
+                test_ris = offset_ris
+            else :
+                test_ris = np.union1d(test_ris, offset_ris)
+        return test_ris
+
+class offset_num_16_match_cls(object) :
+    def __init__(self, base_offsets, osq_obj) :
+        self.base_offsets = base_offsets
+        self.osq_obj = osq_obj
+        
+    def ris_num_16(self, delta_offset, num_16) :
+        match_ris = None
+        for base_offset in self.base_offsets :
+            match_offset = base_offset + delta_offset
+            match_obj = self.osq_obj.offset_seq_match_obj(match_offset)
+            offset_ris = match_obj.num_16_repeat_indexes(num_16)
+            if offset_ris is None :
+                continue
+            if match_ris is None :
+                match_ris = offset_ris
+            else :
+                match_ris = np.union1d(match_ris, offset_ris)
+        return match_ris
+
             
 class cluster_match_num_counts_cls(object) :
     num_count_dtype = np.dtype([('num_16', np.uint32), ('count', np.uint32), ('letters', 'S16')])
@@ -177,6 +210,8 @@ class cluster_seq_match_ris_cls(object) :
         match_ris = None
         for seq in match_seqs :
             ris = self.seq_match_ris(seq, base_offset_delta)
+            if ris is None :
+                continue
             if match_ris is None :
                 match_ris = ris
             else :
@@ -187,6 +222,8 @@ class cluster_seq_match_ris_cls(object) :
         match_ris = None
         for offset_seqs in patterns :
             ris = self.or_seq_match_ris(offset_seqs)
+            if ris is None :
+                continue
             if match_ris is None :
                 match_ris = ris
             else :
@@ -254,6 +291,12 @@ class alignment_run_cls(object) :
         print('aligned repeat count', big_fmt.format(self.aligned_ris.size))
         print('fraction aligned', float_fmt.format(frac_aligned))
         
+    def get_top_num_16(self, base_offset_delta, num_count=100) :
+        cmnco = cluster_match_num_counts_cls(self.ocmo.base_offset_matches, self.ndo)
+        cmnco.build_sorted_match_num_counts(base_offset_delta)
+        nc = cmnco.num_counts
+        return nc[:num_count]
+        
     def top_100_num_16(self, base_offset_delta, num_count=100) :
         cmnco = cluster_match_num_counts_cls(self.ocmo.base_offset_matches, self.ndo)
         cmnco.build_sorted_match_num_counts(base_offset_delta)
@@ -269,10 +312,14 @@ class alignment_run_cls(object) :
         base_offsets = self.align_obj.base_offsets
         print('base offsets', base_offsets, '\nsequence count', big_fmt.format(nc.size),
               '\naligned repeat count', big_fmt.format(total_aligned))
-        print('top 100 repeat count', big_fmt.format(top_100_sum), '\ntop 100 fraction', float_fmt.format(top_100_frac))
+        num_count_str = 'top ' + str(num_count)
+        repeat_str = num_count_str + ' repeat_count'
+        frac_str = '\n' + num_count_str + ' fraction'
+        base_count_str = num_count_str + ' 16 base_counts\n'
+        print(repeat_str, big_fmt.format(top_100_sum), frac_str, float_fmt.format(top_100_frac))
         count_offsets = [offset+base_offset_delta for offset in base_offsets]
         print('count offsets', count_offsets)
-        print('top 100 16 base counts\n', top_100)
+        print(base_count_str, top_100)
 
     def top_100_seqs(self, seq_offset, seq_size) :
         smnco = cluster_match_seq_counts_cls(self.ocmo.base_offset_matches, self.ndo)

@@ -162,14 +162,13 @@ patterns_216 = [p1, p2, p3, p4]
 base_offsets_216 = [216, 215, 214, 217, 218, 213, 219, 212, 220, 211, 221, 210, 222, 209, 223, 224]
 alignments[216] = seq_alignment_cls(patterns_216, base_offsets_216)    
 
-
-
 p1 = ocm.match_pattern_cls(0, ['TGCACT', 'TGTACT', 'TGCATT', 'TACACT', 'CGCACT'])
 p2 = ocm.match_pattern_cls(6, ['CCAGCC', 'CTAGCC', 'CCAGTC', 'CCAGCT', 'CCAACC', 'TCAGCC', 'GCAGCC'])
 patterns_245 = [p1, p2]
 base_offsets_245 = [245, 244, 243, 246, 247, 248, 242, 241, 249, 250, 240, 239, 251, 252, 
                 253, 239, 238, 237, 236, 235, 234, 233, 232, 254, 255, 256, 257, 258, 231, 230]
 alignments[245] = seq_alignment_cls(patterns_245, base_offsets_245)    
+
 
 p1 = ocm.match_pattern_cls(0, ['CGAGAT', 'TGAGAT', 'CAAGAT', 'TATGAT', 'CATGAT',  'TGTGAT', 'AGAGAT', 'GGAGAT'])
 p2 = ocm.match_pattern_cls(-4, ['GAGCCG', 'GAGCCA', 'GAGCTG', 'GAGCTA', 'GAGCAG'])
